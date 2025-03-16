@@ -1,13 +1,18 @@
+// @ts-check
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+require('dotenv').config();
 
+
+const mongoURI=process.env.MONGO_URI;
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // MongoDB Connection
-mongoose.connect("mongodb://localhost:27017/voice-translate", {
+mongoose.connect(mongoURI || "mongodb://localhost:27017/voice-translate", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => console.log("MongoDB Connected"))
