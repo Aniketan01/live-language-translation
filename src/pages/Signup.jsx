@@ -11,7 +11,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://live-language-translation-67c5.onrender.com/signup", { username, email, password });
+      await axios.post("http://localhost:5000/signup", { username, email, password });
       navigate("/login");
     } catch (error) {
       console.log(error)

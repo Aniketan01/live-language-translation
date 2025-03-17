@@ -11,7 +11,7 @@ const VoiceTranslation = () => {
   const [voices, setVoices] = useState([]);
 
   useEffect(() => {
-    axios.get("https://lingva-translate-aniketan.vercel.app/api/v1/languages")
+    axios.get("https://lingva-translate-drab-sigma.vercel.app/api/v1/languages")
       .then(res => setLanguages(res.data.languages || []))
       .catch(err => console.error("Error fetching languages", err));
 
@@ -32,7 +32,7 @@ const VoiceTranslation = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://lingva-translate-aniketan.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
+        `https://lingva-translate-drab-sigma.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
       );
       setTranslatedText(res.data.translation || "Translation failed");
     } catch {
