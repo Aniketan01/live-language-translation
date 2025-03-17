@@ -10,7 +10,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/login", { email, password });
+      const res = await axios.post("https://live-language-translation-67c5.onrender.com/login", { email, password });
       localStorage.setItem("user", res.data.username);
       navigate("/");
       window.location.reload(); // Refresh to update navbar
