@@ -16,7 +16,6 @@ function App() {
         <Route path="/voice-translate" element={<VoiceTranslation />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
