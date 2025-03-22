@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Get API URL from .env
+
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,7 +14,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://live-language-translation-67c5.onrender.com/signup", { username, email, password });
+      await axios.post(`${API_BASE_URL}/signup`, { username, email, password });
       navigate("/login");
     } catch (error) {
       console.log(error);

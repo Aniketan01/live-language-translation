@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Get API URL from .env
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,7 +13,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://live-language-translation-67c5.onrender.com/login", { email, password });
+      const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
       localStorage.setItem("user", res.data.username);
       navigate("/");
       window.location.reload();

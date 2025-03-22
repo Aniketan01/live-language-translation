@@ -28,13 +28,25 @@ const LiveTranslation = () => {
       const response = await axios.get(
         `https://lingva-translate-drab-sigma.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
       );
-      setTranslatedText(response.data.translation || "Translation failed");
+  
+      const translated = response.data.translation || "Translation failed";
+      setTranslatedText(translated);
+  
+      // Store translation in the database
+      await axios.post("http://localhost:5000/store-translation", {
+        text,
+        translatedText: translated,
+        inputLanguage,
+        outputLanguage
+      });
+  
     } catch (error) {
       console.log(error)
       setTranslatedText("Error translating text");
     }
     setLoading(false);
   };
+  
 
   return (
     <div className="container mt-4 p-4 shadow-lg rounded" style={{ maxWidth: "600px" }}>
