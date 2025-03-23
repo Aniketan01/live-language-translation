@@ -4,6 +4,7 @@ import axios from "axios";
 const History = () => {
   const [textTranslations, setTextTranslations] = useState([]);
   const [voiceTranslations, setVoiceTranslations] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_RENDER_API || "http://localhost:5000";
 
   useEffect(() => {
     const fetchTranslations = async () => {
@@ -22,7 +23,7 @@ const History = () => {
         }
 
         // ✅ Send the correct username in API request
-        const response = await axios.get(`http://localhost:5000/translations?user=${parsedUser.username}`);
+        const response = await axios.get(`${API_BASE_URL}/translations?user=${parsedUser.username}`);
 
         if (!response.data || response.data.length === 0) {
           console.warn("No translations found.");
