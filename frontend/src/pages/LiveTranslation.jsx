@@ -8,6 +8,7 @@ const LiveTranslation = () => {
   const [inputLanguage, setInputLanguage] = useState("en");
   const [outputLanguage, setOutputLanguage] = useState("hi");
   const [languages, setLanguages] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchLanguages = async () => {
@@ -28,44 +29,45 @@ const LiveTranslation = () => {
       const response = await axios.get(
         `https://lingva-translate-drab-sigma.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
       );
-
+  
       if (!response.data || !response.data.translation) {
         setTranslatedText("Translation failed");
         return;
       }
-
+  
       const translation = response.data.translation;
       setTranslatedText(translation);
-
+  
       // Retrieve user from localStorage
       const user = localStorage.getItem("user");
       if (!user) {
         console.error("User is missing from localStorage");
         return;
       }
-
+  
       const parsedUser = JSON.parse(user);
       if (!parsedUser.username) {
         console.error("Invalid user object in localStorage");
         return;
       }
-
-      // Store translation in database
-      await axios.post("http://localhost:5000/store-translation", {
-        user: parsedUser.username, // Corrected to send only username
+  
+      // Store translation in database (Uses API_BASE_URL)
+      await axios.post(`${API_BASE_URL}/store-translation`, {
+        user: parsedUser.username,
         text,
         translatedText: translation,
         inputLanguage,
         outputLanguage,
         type: "text",
       });
-
+  
     } catch (error) {
       console.error("Translation API Error:", error);
       setTranslatedText("Error translating text");
     }
     setLoading(false);
   };
+  
 
   return (
     <div className="container mt-4 p-4 shadow-lg rounded" style={{ maxWidth: "600px" }}>

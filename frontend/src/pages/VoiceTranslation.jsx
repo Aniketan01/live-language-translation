@@ -9,6 +9,7 @@ const VoiceTranslation = () => {
   const [outputLanguage, setOutputLanguage] = useState("hi");
   const [languages, setLanguages] = useState([]);
   const [voices, setVoices] = useState([]);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     axios
@@ -39,30 +40,30 @@ const VoiceTranslation = () => {
   const translateText = async () => {
     if (!text.trim()) return;
     setLoading(true);
-
+  
     try {
       const res = await axios.get(
         `https://lingva-translate-drab-sigma.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
       );
-
+  
       const translation = res.data.translation || "Translation failed";
       setTranslatedText(translation);
-
+  
       // ✅ Retrieve user ID from localStorage
       const user = localStorage.getItem("user");
       if (!user) {
         console.error("User is missing from localStorage");
         return;
       }
-
+  
       const parsedUser = JSON.parse(user);
       if (!parsedUser.username) {
         console.error("Invalid user object in localStorage");
         return;
       }
-
+  
       // ✅ Store translation in database with correct user field
-      await axios.post("http://localhost:5000/store-translation", {
+      await axios.post(`${API_BASE_URL}/store-translation`, {
         user: parsedUser.username, // Extract username correctly
         text,
         translatedText: translation,
@@ -70,15 +71,16 @@ const VoiceTranslation = () => {
         outputLanguage,
         type: "voice",
       });
-
+  
       console.log("Translation successfully stored!");
     } catch (error) {
       console.error("Error in Translation or Storing:", error);
       setTranslatedText("Error translating text");
     }
-
+  
     setLoading(false);
   };
+  
 
   const speakTranslation = () => {
     if (!translatedText) return;
