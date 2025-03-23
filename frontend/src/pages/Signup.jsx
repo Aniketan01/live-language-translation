@@ -14,13 +14,20 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/signup`, { username, email, password });
+      const response = await axios.post(`${API_BASE_URL}/signup`, { username, email, password });
+      console.log("Signup successful:", response.data);
       navigate("/login");
     } catch (error) {
-      console.log(error);
-      alert("Signup failed");
+      if (error.response) {
+        console.error("Error Response:", error.response.data);
+        alert(`Signup failed: ${error.response.data.message || "Invalid request"}`);
+      } else {
+        console.error("Signup Error:", error);
+        alert("Signup failed: Network or server issue.");
+      }
     }
   };
+  
 
   return (
     <div className="container mt-5">
