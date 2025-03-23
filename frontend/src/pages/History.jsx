@@ -4,7 +4,7 @@ import axios from "axios";
 const History = () => {
   const [textTranslations, setTextTranslations] = useState([]);
   const [voiceTranslations, setVoiceTranslations] = useState([]);
-  const API_BASE_URL = import.meta.env.VITE_RENDER_API || "http://localhost:5000";
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchTranslations = async () => {
@@ -41,7 +41,7 @@ const History = () => {
     };
 
     fetchTranslations();
-  }, []);
+  }, [API_BASE_URL]);
 
   return (
     <div className="container mt-4 p-4 shadow-lg rounded">
