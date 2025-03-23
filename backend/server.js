@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://live-language-translation.vercel.app", // ✅ Allow only your frontend
+    origin: "*", // ✅ Allow only your frontend
     credentials: true, // ✅ Allows cookies and authentication headers
   })
 );
