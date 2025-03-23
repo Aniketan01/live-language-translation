@@ -14,7 +14,12 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(`${API_BASE_URL}/login`, { email, password });
-      localStorage.setItem("user", res.data.username);
+  
+      // Store the full user object in localStorage
+      localStorage.setItem("user", JSON.stringify({ username: res.data.user }));
+
+
+  
       navigate("/");
       window.location.reload();
     } catch (error) {
@@ -22,6 +27,7 @@ const Login = () => {
       alert("Invalid Credentials");
     }
   };
+  
 
   return (
     <div className="container mt-5">

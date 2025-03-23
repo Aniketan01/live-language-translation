@@ -11,9 +11,10 @@ const VoiceTranslation = () => {
   const [voices, setVoices] = useState([]);
 
   useEffect(() => {
-    axios.get("https://lingva-translate-drab-sigma.vercel.app/api/v1/languages")
-      .then(res => setLanguages(res.data.languages || []))
-      .catch(err => console.error("Error fetching languages", err));
+    axios
+      .get("https://lingva-translate-drab-sigma.vercel.app/api/v1/languages")
+      .then((res) => setLanguages(res.data.languages || []))
+      .catch((err) => console.error("Error fetching languages", err));
 
     const loadVoices = () => setVoices(window.speechSynthesis.getVoices());
     loadVoices();
@@ -23,21 +24,59 @@ const VoiceTranslation = () => {
   const handleVoiceInput = () => {
     const recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
     recognition.lang = inputLanguage;
-    recognition.onresult = (e) => setText(e.results[0][0].transcript);
+    
+    recognition.onresult = (e) => {
+      setText(e.results[0][0].transcript);
+    };
+
+    recognition.onend = () => {
+      translateText(); // 🔥 Automatically translate after voice input
+    };
+
     recognition.start();
   };
 
   const translateText = async () => {
     if (!text.trim()) return;
     setLoading(true);
+
     try {
       const res = await axios.get(
         `https://lingva-translate-drab-sigma.vercel.app/api/v1/${inputLanguage}/${outputLanguage}/${encodeURIComponent(text)}`
       );
-      setTranslatedText(res.data.translation || "Translation failed");
-    } catch {
+
+      const translation = res.data.translation || "Translation failed";
+      setTranslatedText(translation);
+
+      // ✅ Retrieve user ID from localStorage
+      const user = localStorage.getItem("user");
+      if (!user) {
+        console.error("User is missing from localStorage");
+        return;
+      }
+
+      const parsedUser = JSON.parse(user);
+      if (!parsedUser.username) {
+        console.error("Invalid user object in localStorage");
+        return;
+      }
+
+      // ✅ Store translation in database with correct user field
+      await axios.post("http://localhost:5000/store-translation", {
+        user: parsedUser.username, // Extract username correctly
+        text,
+        translatedText: translation,
+        inputLanguage,
+        outputLanguage,
+        type: "voice",
+      });
+
+      console.log("Translation successfully stored!");
+    } catch (error) {
+      console.error("Error in Translation or Storing:", error);
       setTranslatedText("Error translating text");
     }
+
     setLoading(false);
   };
 
@@ -45,7 +84,7 @@ const VoiceTranslation = () => {
     if (!translatedText) return;
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(translatedText);
-    utterance.voice = voices.find(v => v.lang.startsWith(outputLanguage)) || null;
+    utterance.voice = voices.find((v) => v.lang.startsWith(outputLanguage)) || null;
     synth.speak(utterance);
   };
 
@@ -56,18 +95,28 @@ const VoiceTranslation = () => {
       <div className="mb-3">
         <label className="form-label">Input Language:</label>
         <select className="form-select" value={inputLanguage} onChange={(e) => setInputLanguage(e.target.value)}>
-          {languages.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
+          {languages.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.name}
+            </option>
+          ))}
         </select>
       </div>
 
       <textarea className="form-control mb-3" rows="3" value={text} placeholder="Recognized Speech" onChange={(e) => setText(e.target.value)} />
 
-      <button className="btn btn-primary w-100 mb-3" onClick={handleVoiceInput}>Speak Now</button>
+      <button className="btn btn-primary w-100 mb-3" onClick={handleVoiceInput}>
+        Speak Now
+      </button>
 
       <div className="mb-3">
         <label className="form-label">Output Language:</label>
         <select className="form-select" value={outputLanguage} onChange={(e) => setOutputLanguage(e.target.value)}>
-          {languages.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
+          {languages.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -77,7 +126,11 @@ const VoiceTranslation = () => {
 
       <textarea className="form-control mb-3" rows="3" value={translatedText} placeholder="Translated Text" readOnly />
 
-      {translatedText && <button className="btn btn-warning w-100" onClick={speakTranslation}>Play Translation</button>}
+      {translatedText && (
+        <button className="btn btn-warning w-100" onClick={speakTranslation}>
+          Play Translation
+        </button>
+      )}
     </div>
   );
 };
